@@ -14,16 +14,30 @@ con.connect(function (err) {
     console.log("Connected!");
 });
 
-scraperjs.StaticScraper.create('https://www.tripadvisor.com/Attractions-g294226-Activities-oa30-Bali.html')
-    .scrape(function ($) {
-        let objects = getObject($);
-        return objects;
-    })
-    .then(function (objects) {
-        console.log(objects);
-    });
+let linkArray = [
+    {
+        url: 'https://www.tripadvisor.com/Attractions-g294226-Activities-oa30-Bali.html',
+        city: 'bali'
+    },
+    {
+        url: 'https://www.tripadvisor.com/Attractions-g297704-Activities-oa30-Bandung_West_Java_Java.html',
+        city: 'bandung'
+    }
+]
 
-function getObject($) {
+linkArray.map(source => {
+    scraperjs.StaticScraper.create(source.url)
+        .scrape(function ($) {
+            getObject($, source.city);
+            console.log(`done ${source.city}`);
+        })
+        .then(function (objects) {
+            console.log(objects);
+        });
+})
+
+
+function getObject($, city) {
     return $("._1MKm6PFo").map(function () {
         let url = $(this).find('._1QKQOve4').attr('href');
 
@@ -42,11 +56,14 @@ function getObject($) {
             url: url,
             image_url: image_url,
             rating: rating,
+            city: city,
             category: category,
             total_review: total_review,
         };
 
-        insertDB(object);
+        if (image_url.substring(0, 4) == 'http') {
+            insertDB(object);
+        }
 
         return object
     }).get();
@@ -54,7 +71,7 @@ function getObject($) {
 
 function insertDB(object) {
     console.log(object.name);
-    var sql = "INSERT INTO objects VALUES (null, '" + object.name + "', '" + object.url + "','" + object.image_url + "','" + object.rating + "','" + object.category + "','" + object.total_review + "')";
+    var sql = "INSERT INTO objects VALUES (null, '" + object.name + "', '" + object.url + "','" + object.image_url + "','" + object.city + "','" + object.rating + "','" + object.category + "','" + object.total_review + "')";
     con.query(sql, function (err, result) {
         if (err) throw err;
         console.log("1 record inserted");
