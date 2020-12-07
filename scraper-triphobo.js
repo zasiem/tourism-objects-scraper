@@ -16,12 +16,15 @@ con.connect(function (err) {
 
 const cities = [
     // 'surabaya',
+    // 'batam',
     // 'jakarta',
     // 'medan',
-    // 'bali',
+    'bali',
     // 'yogyakarta',
     // 'bandung',
+    // 'manado',
     // 'semarang',
+    // 'solo',
 ]
 
 const getLink = city => {
@@ -82,7 +85,7 @@ const scrapDetail = (link, city) => {
 }
 
 const insertDB = object => {
-    var sql = `INSERT INTO objects VALUES (null, "${object.title}", "${object.link}", "${object.image_url}", "${object.city}", "${object.rating}", "${object.category}", "${object.total_review}", "${object.description}", "${object.price}")`;
+    var sql = `INSERT INTO objects VALUES (null, "${object.title}", "${object.link}", "${object.image_url}", "${object.city}", "${object.rating}", "${object.category}", "${object.total_review}", "${object.description}", "${object.price}", "${object.address}")`;
     con.query(sql, function (err, result) {
         if (err) throw err;
         return console.log(`${object.title} record inserted`);
